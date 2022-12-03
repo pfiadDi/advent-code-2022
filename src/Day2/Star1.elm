@@ -1,36 +1,36 @@
-module Star2 exposing (..)
+module Day2.Star1 exposing (..)
 
 import Html exposing (Html, text)
 
 
-winner : ( Symbol, Result ) -> Int
+winner : ( Symbol, Symbol ) -> Int
 winner round =
     case round of
-        ( Rock, Draw ) ->
+        ( Rock, Rock ) ->
             3 + symbolToPts Rock
 
-        ( Rock, Win ) ->
+        ( Rock, Paper ) ->
             6 + symbolToPts Paper
 
-        ( Rock, Loss ) ->
+        ( Rock, Scissors ) ->
             0 + symbolToPts Scissors
 
-        ( Paper, Draw ) ->
+        ( Paper, Paper ) ->
             3 + symbolToPts Paper
 
-        ( Paper, Win ) ->
+        ( Paper, Scissors ) ->
             6 + symbolToPts Scissors
 
-        ( Paper, Loss ) ->
+        ( Paper, Rock ) ->
             0 + symbolToPts Rock
 
-        ( Scissors, Draw ) ->
+        ( Scissors, Scissors ) ->
             3 + symbolToPts Scissors
 
-        ( Scissors, Win ) ->
+        ( Scissors, Rock ) ->
             6 + symbolToPts Rock
 
-        ( Scissors, Loss ) ->
+        ( Scissors, Paper ) ->
             0 + symbolToPts Paper
 
         _ ->
@@ -44,20 +44,20 @@ type Symbol
     | Wrong
 
 
-meToSymbol : String -> Result
+meToSymbol : String -> Symbol
 meToSymbol val =
     case val of
         "X" ->
-            Loss
+            Rock
 
         "Y" ->
-            Draw
+            Paper
 
         "Z" ->
-            Win
+            Scissors
 
         _ ->
-            WrongRes
+            Rock
 
 
 symbolToPts : Symbol -> Int
@@ -80,7 +80,6 @@ type Result
     = Win
     | Loss
     | Draw
-    | WrongRes
 
 
 resultToPts : Result -> Int
@@ -94,9 +93,6 @@ resultToPts res =
 
         Draw ->
             3
-
-        WrongRes ->
-            -100000000
 
 
 elfToSymbol : String -> Symbol
@@ -126,12 +122,12 @@ main =
         |> text
 
 
-roundToPts : List ( Symbol, Result ) -> List Int
+roundToPts : List ( Symbol, Symbol ) -> List Int
 roundToPts list =
     List.map getResult list
 
 
-stringToRound : String -> ( Symbol, Result )
+stringToRound : String -> ( Symbol, Symbol )
 stringToRound round =
     String.split " " round
         |> (\x ->
@@ -140,11 +136,11 @@ stringToRound round =
                         ( elfToSymbol a, meToSymbol (List.head b |> Maybe.withDefault "Wrong") )
 
                     other ->
-                        ( Wrong, WrongRes )
+                        ( Wrong, Wrong )
            )
 
 
-getResult : ( Symbol, Result ) -> Int
+getResult : ( Symbol, Symbol ) -> Int
 getResult round =
     winner round
 
