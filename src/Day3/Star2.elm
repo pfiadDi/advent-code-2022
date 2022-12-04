@@ -10,7 +10,6 @@ main =
         |> String.split "\n"
         |> List.map toCharList
         |> toGroupsOfThree_ []
-        |> List.map findIntersection
         |> List.map toPriority
         |> List.sum
         |> Debug.toString
@@ -22,16 +21,17 @@ toGroupsOfThree rucksacks =
     []
 
 
-toGroupsOfThree_ : List (List Char) -> List Char -> List (List Char)
-toGroupsOfThree_ grouped all =
+toGroupsOfThree_ : List Char -> List (List Char) -> List Char
+toGroupsOfThree_ found all =
     List.take 3 all
-        |> (++) grouped
-        |> (\grouped_ ->
+        |> findIntersection
+        |> (\char -> char :: found)
+        |> (\found_ ->
                 if List.length all > 3 then
-                    toGroupsOfThree_ grouped_ all
+                    toGroupsOfThree_ found_ (List.drop 3 all)
 
                 else
-                    grouped_
+                    found_
            )
 
 
@@ -40,18 +40,33 @@ toCharList items =
     String.toList items
 
 
-findIntersection : List Char -> Char
+findIntersection : List (List Char) -> Char
 findIntersection items =
     let
-        compartment1 =
-            List.take (List.length items // 2) items
+        ruck1 =
+            List.head items
+                |> Maybe.withDefault []
                 |> Set.fromList
 
-        compartment2 =
-            List.drop (List.length items // 2) items
+        ruck2 =
+            List.drop 1 items
+                |> List.head
+                |> Maybe.withDefault []
                 |> Set.fromList
+
+        ruck3 =
+            List.drop 2 items
+                |> List.head
+                |> Maybe.withDefault []
+                |> Set.fromList
+
+        test1 =
+            Set.intersect ruck1 ruck2
+
+        test2 =
+            Set.intersect ruck3 ruck2
     in
-    Set.intersect compartment1 compartment2
+    Set.intersect test1 test2
         |> Set.toList
         |> List.head
         |> Maybe.withDefault 'a'
